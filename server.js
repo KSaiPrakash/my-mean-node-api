@@ -19,26 +19,30 @@ const { Registration } = require('./db/models')
 
 /** Route handlers
  *  registration routes 
- *  Get /lists to get all lists
+ *  Get /registration to get all profile
 */
 app.get('/registration', (req, res)=> {
   /** We want to return an array of all the list in the db*/
-  console.log(req.body);
+  Registration.find().then((profile)=> {
+    console.log(profile);
+    res.send(profile);
+  }).catch((e) => {
+    console.log(e);
+    res.send(e);
+  })
 });
 
 app.post('/registration', (req, res)=> {
     /** Create a new list */
-    let firstname = req.body.firstname;
-    let lastname = req.body.lastname;
-    let newList = new Registration({
-      firstname},{
-      lastname
-    });
-    console.log(newList);
+    let newList = new Registration(
+      {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname
+      });
     newList.save().then((listDoc)=> {
-      res.send(listDoc);
+      /** returning the newly created record's mongo _id */
+      res.status('200').send(listDoc._id);
     })
-    res.send('200 Message received')
 });
 
 app.patch('/registration/:id', (req, res)=> {
